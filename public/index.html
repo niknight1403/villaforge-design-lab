@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>VillaForge Design Lab</title>
+  <style>
+    body { background: #050816; color: #00FFD1; font-family: sans-serif; padding: 20px; }
+    h1 { color: #FF3DDB; }
+    .card { border: 1px solid #00FFD1; padding: 15px; margin: 10px 0; border-radius: 8px; }
+    button { background: #00FFD1; color: #050816; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>VillaForge Design Lab & Theme-Sync</h1>
+  <p>Zentrale Design- und UI-Mockup-Instanz fuer die VillaForge-Familie.</p>
+  <div class="card">
+    <h3>Multi-Style-Generator & Theme Sync</h3>
+    <button onclick="syncTheme('cyber-glass')">Cyber Glass Sync</button>
+  </div>
+  <div id="result"></div>
+  <script>
+    function syncTheme(theme) {
+      fetch('/api/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+      });
+    }
+  </script>
+</body>
+</html>

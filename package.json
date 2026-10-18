@@ -1,0 +1,13 @@
+{
+  "name": "villafocus-design-lab",
+  "version": "1.0.0",
+  "description": "Zentrale Design- und UI-Mockup-Instanz fuer die VillaForge-Produktfamilie",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
