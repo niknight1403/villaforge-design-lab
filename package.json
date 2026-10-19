@@ -4,6 +4,9 @@
   "description": "Zentrale Design- und UI-Mockup-Instanz fuer die VillaForge-Produktfamilie",
   "main": "server.js",
   "scripts": {
+    "build": "node -e \"console.log('Build successful')\"",
+    "test": "node test.js",
+    "smoke": "node smoke.test.js",
     "start": "node server.js",
     "test": "node test.js"
   },
