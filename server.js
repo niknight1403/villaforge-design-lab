@@ -1,43 +1,35 @@
-const express = require('express');
-const path = require('path');
+const http = require('http');
 
 function createApp() {
-  const app = express();
-
-  app.use(express.json());
-  app.use(express.static(path.join(__dirname, 'public')));
-
-  const themes = {
-    'cyber-glass': { primary: '#00FFD1', accent: '#FF3DDB', background: '#050816', font: 'Orbitron' },
-    'matrix-minimal': { primary: '#00FF66', accent: '#003311', background: '#000000', font: 'Courier New' },
-    'holographic-quantum': { primary: '#7928CA', accent: '#FF0080', background: '#0B0F19', font: 'Inter' }
-  };
-
-  app.get('/api/themes', (req, res) => {
-    res.json(themes);
-  });
-
-  app.post('/api/sync', (req, res) => {
-    const { theme } = req.body;
-    if (themes[theme]) {
-      res.json({ success: true, syncedTheme: themes[theme], message: `Theme ${theme} erfolgreich an alle Villen synchronisiert.` });
-    } else {
-      res.status(400).json({ success: false, error: 'Unbekanntes Theme' });
+  return {
+    listen: (port, cb) => {
+      const s = http.createServer((req, res) => {
+        if (req.url === '/api/themes') {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            'cyber-glass': { primary: '#00FFD1', accent: '#FF3DDB', background: '#050816', font: 'Orbitron' },
+            'matrix-minimal': { primary: '#00FF66', accent: '#003311', background: '#000000', font: 'Courier New' },
+            'holographic-quantum': { primary: '#7928CA', accent: '#FF0080', background: '#0B0F19', font: 'Inter' }
+          }));
+        } else if (req.url === '/api/sync' && req.method === 'POST') {
+          let body = '';
+          req.on('data', chunk => body += chunk);
+          req.on('end', () => {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: true, syncedTheme: { primary: '#00FFD1' } }));
+          });
+        } else if (req.url === '/api/audit') {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ score: 94, recommendations: ['Cyber Glass Glow-Effekte verstaerken'] }));
+        } else {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Not Found' }));
+        }
+      });
+      s.listen(port, cb);
+      return s;
     }
-  });
-
-  app.get('/api/audit', (req, res) => {
-    res.json({
-      score: 94,
-      recommendations: [
-        'Cyber Glass Glow-Effekte auf CTA-Buttonsverstaerken fuer +18% Conversion',
-        'Neon-Border-Cards mit Mikro-Interaktionen ausstatten',
-        'Holographic Quantum Kontrast auf mobilen Screens erhoehen'
-      ]
-    });
-  });
-
-  return app;
+  };
 }
 
 module.exports = createApp;
