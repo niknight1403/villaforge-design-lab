@@ -11,6 +11,8 @@
   </style>
 </head>
 <body>
+  <div id="loading" style="display: none; color: #FF3DDB; font-weight: bold; margin-bottom: 10px;">Lade Daten...</div>
+  <div id="error" style="display: none; color: #ff3333; font-weight: bold; margin-bottom: 10px;"></div>
   <h1>VillaForge Design Lab & Theme-Sync</h1>
   <p>Zentrale Design- und UI-Mockup-Instanz fuer die VillaForge-Familie.</p>
   <div class="card">
@@ -19,15 +21,38 @@
   </div>
   <div id="result"></div>
   <script>
+    function showLoading(show) {
+      document.getElementById('loading').style.display = show ? 'block' : 'none';
+    }
+    function showError(msg) {
+      const errDiv = document.getElementById('error');
+      if (msg) {
+        errDiv.style.display = 'block';
+        errDiv.innerText = msg;
+      } else {
+        errDiv.style.display = 'none';
+        errDiv.innerText = '';
+      }
+    }
     function syncTheme(theme) {
+      showLoading(true);
+      showError(null);
       fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ theme })
       })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Server-Fehler: ' + res.status);
+        return res.json();
+      })
       .then(data => {
+        showLoading(false);
         document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+      })
+      .catch(err => {
+        showLoading(false);
+        showError(err.message || 'Unbekannter Fehler aufgetreten');
       });
     }
   </script>
